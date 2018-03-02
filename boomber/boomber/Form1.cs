@@ -39,6 +39,13 @@ namespace boomber
 
             this.Paint += new PaintEventHandler(Program_Paint); // обработчик прорисовки формы
             this.KeyDown += new KeyEventHandler(Program_KeyDown); // обработчик нажатий на кнопки
+            this.MouseClick += new MouseEventHandler(Program_MouseClick);
+        }
+
+        private void Program_MouseClick(object sender, MouseEventArgs e)
+        {
+            game.PlaseBomb(MousePosition.X, MousePosition.Y,S);
+
         }
 
         void StartGame()
@@ -46,7 +53,7 @@ namespace boomber
             game = new Game();
             game.Start(W,H,S);
 
-            timer1.Interval = 200;
+            //timer1.Interval = 200;
             timer1.Tick += new EventHandler(timer1_Tick);
             timer1.Start();
 
@@ -54,9 +61,10 @@ namespace boomber
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            
+            game.Update(W, H);
+            Refresh();
         }
-
+        
         private void Program_KeyDown(object sender, KeyEventArgs e)
         {
             
@@ -69,6 +77,7 @@ namespace boomber
             Pen blackPen = new Pen(Color.Black, 1);
             blackPen.Alignment = PenAlignment.Inset;
             game.Draw(g,S,blackPen);
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)

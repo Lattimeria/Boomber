@@ -8,21 +8,23 @@ namespace boomber
 {
     class Game
     {
-        Block startBlock;
+        Block block;
         Random rand = new Random();
         public void Start(int width, int height, int sizeCell)
         {
-            // отрисовка границ
             int blockX = width-1, blockY = height-1;
-            startBlock = new Block(blockX, blockY);
+            block = new Block(blockX, blockY);
             
 
         }
-
+        public void PlaseBomb(int X, int Y,int S)
+        {
+           block.AddBomb(X, Y);
+        }
         
         public void Draw(System.Drawing.Graphics graphics,int S, System.Drawing.Pen pen)
         {
-            startBlock.Draw(graphics, S,pen);
+            block.Draw(graphics, S,pen);
 
         }
     }

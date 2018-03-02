@@ -8,81 +8,112 @@ namespace boomber
 {
     class Block
     {
-        public List<Coordinate> BlockCoordinateIndest;
-        public List<Coordinate> BlockCoordinateDest;
+        public List<BlockCoordinate> BlockCoordinate;
+        public int blockCount = 0;
         Random rnd = new Random();
-        public int countBlock = 0;
-        // 1 - уничтожается, 2 - не уничтожается, 0 - портал
-        public Block(int sizeX, int sizeY) // 2
-        {
 
-            IndestructibleBlock(sizeX, sizeY);
-            DestructibleBlock(sizeX, sizeY);
+        public Block(int coordX, int coordY)
+        {
+            AddBlock(coordX, coordY);
+            
         }
-        void IndestructibleBlock(int sizeX, int sizeY)
+        void AddBlock(int x, int y)
         {
-            BlockCoordinateIndest = new List<Coordinate>();
-            BlockCoordinateDest = new List<Coordinate>();
+            int t = 1;
+            BlockCoordinate = new List<BlockCoordinate>();
 
-            for (int i = 0; i < sizeY; i++)
+            for (int i = 0; i < y; i++)
             {
-                BlockCoordinateIndest.Add(new Coordinate(0, i));
-                BlockCoordinateIndest.Add(new Coordinate(sizeX, i));
+                BlockCoordinate.Add(new BlockCoordinate(0, i, t));
+                BlockCoordinate.Add(new BlockCoordinate(x, i, t));
             }
-            for (int i = 0; i < sizeX + 1; i++)
+            for (int i = 0; i < x + 1; i++)
             {
-                BlockCoordinateIndest.Add(new Coordinate(i, 0));
-                BlockCoordinateIndest.Add(new Coordinate(i, sizeY));
+                BlockCoordinate.Add(new BlockCoordinate(i, 0, t));
+                BlockCoordinate.Add(new BlockCoordinate(i, y, t));
             }
-            for (int i = 1; i < sizeY - 1; i++)
+            for (int i = 1; i < y; i++)
             {
-                for (int j = 1; j < sizeX; j++)
+                for (int j = 1; j < x; j++)
                 {
                     if (i % 2 == 0 && j % 2 == 0)
-                        BlockCoordinateIndest.Add(new Coordinate(j, i));
-                    countBlock++;
-                }
-            }
-        }
+                        BlockCoordinate.Add(new BlockCoordinate(j, i, t));
 
-        void DestructibleBlock(int sizeX, int sizeY)
-        {
-            for (int i = 0; i < countBlock / 3; i++)
-            {
-                int X = rnd.Next(1, sizeX);
-                int Y = rnd.Next(1, sizeY - 1);
-                
-                
-                if ((X == BlockCoordinateIndest[i].X) && (Y = BlockCoordinateIndest[i].Y))
-                    //else { BlockCoordinateDest.Add(new Coordinate(j, i)); countBlock++; }
-                
+                    blockCount++;
                 }
             }
+
+            for (int k = 0; k < blockCount / 3; k++)
+            {
+                bool notCoinc = true;
+                int Y = rnd.Next(1, y);
+                int X = rnd.Next(1, x);
+                for (int i = 0; i < BlockCoordinate.Count; i++)
+                {
+                    if (Y == BlockCoordinate[i].BlockCoordY && X == BlockCoordinate[i].BlockCoordX)
+                    { notCoinc = false; k--; break; }
+
+                }
+                if (notCoinc == true)
+                    BlockCoordinate.Add(new BlockCoordinate(X, Y, 2));
+
+            }
         }
+        public void AddBomb(int X,int Y)
+        {
+            bool notCoinc = true;
+            int t = 0;
+            for (int i = 0; i < BlockCoordinate.Count; i++)
+            {
+                if (Y == BlockCoordinate[i].BlockCoordY && X == BlockCoordinate[i].BlockCoordX)
+                { notCoinc = false; break; }
+
+            }
+            if (notCoinc == true)
+                BlockCoordinate.Add(new BlockCoordinate(X, Y, t));
+
+        }
+       
         public void Draw(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen)
         {
-            DrawIndestructibleBlock(graphics, S, blackPen);
-            DrawDestructibleBlock(graphics, S, blackPen);
+            DrawBlock(graphics, S, blackPen);
         }
-        void DrawIndestructibleBlock(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen)
+        void DrawBlock(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen)
         {
-            for (int i = 0; i < BlockCoordinateIndest.Count; i++)
-            {
-                var drawRectangle = new System.Drawing.Rectangle(BlockCoordinateIndest[i].X * S, BlockCoordinateIndest[i].Y * S, S, S);
 
-                graphics.FillRectangle(System.Drawing.Brushes.Gray, drawRectangle);
+            for (int i = 0; i < BlockCoordinate.Count; i++)
+            {
+                System.Drawing.Brush style = System.Drawing.Brushes.Gray;
+                if (BlockCoordinate[i].Type == 1)
+                    style = System.Drawing.Brushes.Gray;
+
+                if (BlockCoordinate[i].Type == 2)
+                    style = System.Drawing.Brushes.Pink;
+
+                if (BlockCoordinate[i].Type == 0)
+                    style = System.Drawing.Brushes.Black;
+
+                var drawRectangle = new System.Drawing.Rectangle(BlockCoordinate[i].BlockCoordX * S, BlockCoordinate[i].BlockCoordY * S, S, S);
+
+                graphics.FillRectangle(style, drawRectangle);
                 graphics.DrawRectangle(blackPen, drawRectangle);
+
             }
         }
-        void DrawDestructibleBlock(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen)
-        {
-            for (int i = 0; i < BlockCoordinateDest.Count; i++)
-            {
-                var drawRectangle = new System.Drawing.Rectangle(BlockCoordinateDest[i].X * S, BlockCoordinateDest[i].Y * S, S, S);
 
-                graphics.FillRectangle(System.Drawing.Brushes.Pink, drawRectangle);
-                graphics.DrawRectangle(blackPen, drawRectangle);
-            }
-        }
     }
 }
+class BlockCoordinate
+{
+    public int BlockCoordX;
+    public int BlockCoordY;
+    public int Type; // 1 - уничтожается - розовый, 2 - не уничтожается - серый, 0 - бомба - черный
+
+    public BlockCoordinate(int x, int y, int t)
+    {
+        BlockCoordX = x;
+        BlockCoordY = y;
+        Type = t;
+    }
+}
+
