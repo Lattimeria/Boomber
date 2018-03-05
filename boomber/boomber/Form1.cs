@@ -25,7 +25,7 @@ namespace boomber
             InitializeComponent();
             InitializeForm();
 
-            StartGame();
+            //StartGame();
         }
 
         void InitializeForm()
@@ -44,7 +44,7 @@ namespace boomber
 
         private void Program_MouseClick(object sender, MouseEventArgs e)
         {
-            game.PlaseBomb(MousePosition.X, MousePosition.Y,S);
+            game.AddBomb(MousePosition.X, MousePosition.Y);
 
         }
 
@@ -52,37 +52,39 @@ namespace boomber
         {
             game = new Game();
             game.Start(W,H,S);
-
-            //timer1.Interval = 200;
-            timer1.Tick += new EventHandler(timer1_Tick);
-            timer1.Start();
-
+            
+            timer2.Tick += new EventHandler(timer2_Tick);
+            timer2.Start();
         }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            game.Update(W, H);
-            Refresh();
-        }
-        
+                
         private void Program_KeyDown(object sender, KeyEventArgs e)
         {
             
         }
 
-        private void Program_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.FillRectangle(Brushes.White, 0, 0, this.Width, this.Height);
-            Pen blackPen = new Pen(Color.Black, 1);
-            blackPen.Alignment = PenAlignment.Inset;
-            game.Draw(g,S,blackPen);
-            
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            StartGame();
         }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+
+            Refresh();
+        }
+
+        private void Program_Paint(object sender, PaintEventArgs e)
+        {
+            if (game != null)
+            {
+                Graphics g = e.Graphics;
+                g.FillRectangle(Brushes.White, 0, 0, this.Width, this.Height);
+                Pen blackPen = new Pen(Color.Black, 1);
+                blackPen.Alignment = PenAlignment.Inset;
+                game.Draw(g, S, blackPen);
+            }
+            
+        }
+        
     }
 }
