@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace boomber
 {
@@ -14,77 +15,81 @@ namespace boomber
         public void Start(int width, int height, int sizeCell)
         {
             int blockX = width-1, blockY = height-1;
-            AddBlock(blockX, blockY);
+            GenerateBlocks(blockX, blockY);
             
 
         }
-        void AddBlock(int x, int y)
-        {
-            int blockCount = 0;
-            for (int i = 0; i < y; i++)
+        void GenerateBlocks(int fieldWidth, int fieldHeight)
+        {          
+
+            for (int i = 0; i < fieldHeight; i++)
             {
                 Blocks.Add(new GreyBlock(0, i));
-                Blocks.Add(new GreyBlock(x, i));
+                Blocks.Add(new GreyBlock(fieldWidth, i));
             }
-            for (int i = 0; i < x + 1; i++)
+            for (int i = 0; i < fieldWidth + 1; i++)
             {
                 Blocks.Add(new GreyBlock(i, 0));
-                Blocks.Add(new GreyBlock(i, y));
+                Blocks.Add(new GreyBlock(i, fieldHeight));
             }
-            for (int i = 1; i < y; i++)
+
+            
+            for (int i = 1; i < fieldHeight; i++)
             {
-                for (int j = 1; j < x; j++)
+                for (int j = 1; j < fieldWidth; j++)
                 {
                     if (i % 2 == 0 && j % 2 == 0)
                         Blocks.Add(new GreyBlock(j, i));
-
-                    blockCount++;
                 }
             }
 
-            for (int k = 0; k < blockCount / 3; k++)
-            {
-                int X = rnd.Next(1, x);
-                int Y = rnd.Next(1, y);
+            int innerBlockCount = fieldWidth * fieldHeight;
 
-                for (int i = 0; i < Blocks.Count; i++)
-                {
-                    if (Blocks[i].CheckCoordinate(X, Y) == false)
-                        Blocks.Add(new PinkBlock(X, Y));
-                    else
-                        k--;
-                }
+            var destructibleBlockCount = innerBlockCount / 3;
+            for (int k = 0; k < destructibleBlockCount; k++)
+            {
+                int X = rnd.Next(1, fieldWidth);
+                int Y = rnd.Next(1, fieldHeight);
+
+                Debug.Print($"{k}\t{X}\t{Y}");
+
+                if (GetBlock(X, Y) == null)
+                    Blocks.Add(new PinkBlock(X, Y));
+                else
+                    k--;
             }
         }
-        public void AddBomb(int X, int Y)
+        public void AddBomb(int x, int y)
         {
-            bool notCoinc = true;
+            bool isCellFree = true;
 
             for (int i = 0; i < Blocks.Count; i++)
             {
-                if (Blocks[i].CheckCoordinate(X,Y)==true)
-                { notCoinc = false; break; }
-
+                if (Blocks[i].CheckCoordinate(x, y) == true)
+                {
+                    isCellFree = false;
+                    break;
+                }
             }
-            if (notCoinc == true)
-                Blocks.Add(new Bomb(X, Y));
+            if (isCellFree == true)
+                Blocks.Add(new Bomb(x, y));
         }
-        public Coordinate CheckConjunction(int X, int Y, List<BlockBase> L)
+        
+        public BlockBase GetBlock(int x, int y)
         {
-            Coordinate coord = new Coordinate(X,Y);
-            for (int i = 0; i < L.Count; i++)
+            for (int i = 0; i < Blocks.Count; i++)
             {
-                if (X == L[i].BlockCoordX && Y == L[i].BlockCoordY)
-                    return coord;
-
+                if (x == Blocks[i].BlockCoordX && y == Blocks[i].BlockCoordY)
+                    return Blocks[i];
             }
-            return coord;
+            return null;
         }
-        public void Draw(System.Drawing.Graphics graphics,int S, System.Drawing.Pen pen)
+
+        public void Draw(System.Drawing.Graphics graphics,int cellSize, System.Drawing.Pen pen)
         {
             for(int i=0;i<Blocks.Count;i++)
             {
-                Blocks[i].Draw(graphics, S, pen);
+                Blocks[i].Draw(graphics, cellSize, pen);
             }
         }
     }

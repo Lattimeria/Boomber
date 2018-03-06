@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace boomber
 {
@@ -20,12 +21,9 @@ namespace boomber
 
         public bool CheckCoordinate(int X, int Y)
         {
-            if (X == BlockCoordX && Y == BlockCoordY)
-                return true;
-            else
-                return false;
+            return X == BlockCoordX && Y == BlockCoordY;
         }
-        public abstract void Draw(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen);
+        public abstract void Draw(Graphics graphics, int S, Pen blackPen);
         /*
                 public void Draw(System.Drawing.Graphics graphics, int S, System.Drawing.Pen blackPen)
                 {
@@ -55,6 +53,14 @@ namespace boomber
                 }
 
             }*/
+
+        protected void Draw(Graphics graphics, int S, Pen blackPen, Brush style)
+        {
+            var drawRectangle = new Rectangle(BlockCoordX * S, BlockCoordY * S, S, S);
+
+            graphics.FillRectangle(style, drawRectangle);
+            graphics.DrawRectangle(blackPen, drawRectangle);
+        }
     }
 }
 

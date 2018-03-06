@@ -13,12 +13,7 @@ namespace boomber
         public GreyBlock(int x,int y) : base(x, y) { }
         public override void Draw(Graphics graphics, int S, Pen blackPen)
         {
-            Brush style = Brushes.Gray;
-
-            var drawRectangle = new Rectangle(BlockCoordX * S, BlockCoordY * S, S, S);
-
-            graphics.FillRectangle(style, drawRectangle);
-            graphics.DrawRectangle(blackPen, drawRectangle);
+            Draw(graphics, S, blackPen, Brushes.Gray);
         }
     }
     public class PinkBlock : BlockBase
@@ -27,12 +22,7 @@ namespace boomber
         public PinkBlock(int x, int y) : base(x, y) { }
         public override void Draw(Graphics graphics, int S, Pen blackPen)
         {
-            Brush style = Brushes.Pink;
-
-            var drawRectangle = new Rectangle(BlockCoordX * S, BlockCoordY * S, S, S);
-
-            graphics.FillRectangle(style, drawRectangle);
-            graphics.DrawRectangle(blackPen, drawRectangle);
+            Draw(graphics, S, blackPen, Brushes.Pink);
         }
     }
     public class Bomb : BlockBase

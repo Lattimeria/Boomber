@@ -45,7 +45,6 @@ namespace boomber
         private void Program_MouseClick(object sender, MouseEventArgs e)
         {
             game.AddBomb(MousePosition.X, MousePosition.Y);
-
         }
 
         void StartGame()
