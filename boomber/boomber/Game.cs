@@ -50,9 +50,7 @@ namespace boomber
             {
                 int X = rnd.Next(1, fieldWidth);
                 int Y = rnd.Next(1, fieldHeight);
-
-                Debug.Print($"{k}\t{X}\t{Y}");
-
+                
                 if (GetBlock(X, Y) == null)
                     Blocks.Add(new PinkBlock(X, Y));
                 else
