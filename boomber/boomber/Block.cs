@@ -23,14 +23,16 @@ namespace boomber
         {
             return x == BlockCoordX && Y == BlockCoordY;
         }
-        public abstract void Draw(Graphics graphics, int S, Pen blackPen);
+        public abstract void Draw(Graphics graphics, int S, float deltaT);
+
+        public virtual void Update(float deltaT) { }
         
-        protected void Draw(Graphics graphics, int S, Pen blackPen, Brush style)
+        protected void Draw(Graphics graphics, int S, Brush style)
         {
             var drawRectangle = new Rectangle(BlockCoordX * S, BlockCoordY * S, S, S);
 
             graphics.FillRectangle(style, drawRectangle);
-            graphics.DrawRectangle(blackPen, drawRectangle);
+            graphics.DrawRectangle(Pens.Black, drawRectangle);
         }
     }
 }

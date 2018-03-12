@@ -19,13 +19,13 @@ namespace boomber
         //бомба - координаты, отрисовка
         //нпс - координаты, движение (поведение), отрисовка
         public int W = 21, H = 15, S=30;
+        public float deltaT;
         Game game;
         public Form1()
         {
             InitializeComponent();
             InitializeForm();
-
-            //StartGame();
+            
         }
 
         void InitializeForm()
@@ -44,7 +44,9 @@ namespace boomber
 
         private void Program_MouseClick(object sender, MouseEventArgs e)
         {
-            game.AddBomb(MousePosition.X, MousePosition.Y);
+            if (game.CurrentCountBomb < game.MaxCountBomb)
+                game.AddBomb(e.X / S, e.Y / S);
+            
         }
 
         void StartGame()
@@ -52,7 +54,7 @@ namespace boomber
             game = new Game();
             game.Start(W,H,S);
             
-            timer2.Tick += new EventHandler(timer2_Tick);
+            timer2.Tick += new EventHandler(Timer2_Tick);
             timer2.Start();
         }
                 
@@ -66,21 +68,20 @@ namespace boomber
             StartGame();
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
+        private void Timer2_Tick(object sender, EventArgs e)
         {
-
+            deltaT = timer2.Interval / 1000f;
             Refresh();
         }
-
+        
         private void Program_Paint(object sender, PaintEventArgs e)
         {
             if (game != null)
             {
                 Graphics g = e.Graphics;
                 g.FillRectangle(Brushes.White, 0, 0, this.Width, this.Height);
-                Pen blackPen = new Pen(Color.Black, 1);
-                blackPen.Alignment = PenAlignment.Inset;
-                game.Draw(g, S, blackPen);
+                
+                game.Draw(g, S, deltaT);
             }
             
         }
